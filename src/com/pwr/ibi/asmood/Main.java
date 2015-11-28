@@ -21,10 +21,11 @@ public class Main {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				ASMoodManager manager = new ASMoodManager();
 				
-				ASMoodMainWindow mainWindow = new ASMoodMainWindow(manager);
+				ASMoodMainWindow mainWindow = new ASMoodMainWindow();
 				mainWindow.setVisible(true);
+				
+				//G.asManager.init("test_data/asn100-500.csv");
 			}
 		});
 	}

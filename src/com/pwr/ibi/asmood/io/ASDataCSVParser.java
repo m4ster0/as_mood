@@ -6,8 +6,9 @@ import com.pwr.ibi.asmood.model.ASSubnetModel;
 
 public class ASDataCSVParser extends CSVParser<ASModel>
 {
-	private static final String IMPORT_FIELD = "import";
-	private static final String EXPORT_FIELD = "export";
+	private static final String DESC_FIELD = "desc";
+	private static final String IMPORT_FIELD = "imports";
+	private static final String EXPORT_FIELD = "exports";
 	private static final String SUBNETS_FIELD = "subnets";
 	
 	private static final String DELIMETER = ",";
@@ -24,7 +25,7 @@ public class ASDataCSVParser extends CSVParser<ASModel>
 		
 		String asn = lineFields[0];
 		String name = lineFields[1];
-		String desc = lineFields[2];
+		String desc = lineFields[2].trim().replace(";", "");
 		
 		ASModel asModel = new ASModel(asn, name, desc);
 		
@@ -40,9 +41,11 @@ public class ASDataCSVParser extends CSVParser<ASModel>
 		
 		String[] subnets = lineFields[5].split(" ");
 		if(subnets[0].equals(SUBNETS_FIELD))
-			for(int i = 1; i < subnets.length; i += 2)
+			for(int i = 1; i < subnets.length; i++)
 			{
-				ASSubnetModel subnetModel = new ASSubnetModel(subnets[i], subnets[i + 1]);
+				String[] subnetFields = subnets[i].split("/");
+				String subnetDesc = "Network: " + subnetFields[0] + ", mask: " + subnetFields[1];
+				ASSubnetModel subnetModel = new ASSubnetModel(subnets[i], subnetDesc);
 				asModel.addSubnet(subnetModel);
 			}
 		

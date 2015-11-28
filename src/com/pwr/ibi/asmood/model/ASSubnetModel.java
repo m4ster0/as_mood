@@ -29,9 +29,18 @@ public class ASSubnetModel implements DataModel {
 		return subnetInfo.getHighAddress();
 	}
 	
+	public int getAddressCount()
+	{
+		return subnetInfo.getAddressCount();
+	}
+	
 	public String[] getAllAddresses()
 	{
 		return subnetInfo.getAllAddresses();
+	}
+	
+	public boolean containsAddress(String address) {
+		return subnetInfo.isInRange(address);
 	}
 
 	public String getNetworkCIDRNotation() {

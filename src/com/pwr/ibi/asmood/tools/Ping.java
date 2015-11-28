@@ -10,13 +10,13 @@ public class Ping extends Tool<PingResult> {
 	private static final String regex_timeout_pattern = "timed out";
 
 	private static final String COMMAND_PATH = "ping";
-	private static final String[] OPTIONS = {"-c 2"};
+	private static final String[] OPTIONS = {"-c 3 -i 0.3"};
 	
 	private int packetLostCounter;
 	private int packetCounter;
 	
-	public Ping(String hostname) {
-		super(hostname);
+	public Ping(String hostname, String asn) {
+		super(hostname, asn);
 		
 		this.command_path = COMMAND_PATH;
 		this.options = OPTIONS;
@@ -25,16 +25,11 @@ public class Ping extends Tool<PingResult> {
 		packetLostCounter = 0;
 	}
 
+
 	@Override
 	protected PingResult parseElement(String line) {
 		PingResult result = null;
 		String[] es = line.split(" ");
-		
-//		Pattern responsePattern = Pattern.compile(regex_response_pattern);
-//		Matcher correctLine = responsePattern.matcher(line);
-//		
-//		Pattern timeoutPattern = Pattern.compile(regex_timeout_pattern);
-//		Matcher timeoutLine = timeoutPattern.matcher(line);
 		
 		if (line.contains(regex_response_pattern))
 		{	

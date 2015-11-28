@@ -11,9 +11,9 @@ public class Traceroute extends Tool<TracerouteResult>{
 	private static final String COMMAND_PATH = "traceroute";
 	private static final String[] OPTIONS = {"-A"};
 	
-	public Traceroute(String hostname)
+	public Traceroute(String hostname, String asn)
 	{
-		super(hostname);
+		super(hostname, asn);
 		
 		this.command_path = COMMAND_PATH;
 		this.options = OPTIONS;
@@ -52,8 +52,40 @@ public class Traceroute extends Tool<TracerouteResult>{
 		return null;
 	}
 	
-	public boolean isHostReached()
-	{
+	public boolean isHostReached() {
 		return results.get(results.size() - 1).ipAddress.equals(hostname);
+	}
+	
+	public boolean isASReached() {
+		return results.get(results.size() - 1).asn.equals(asn);
+	}
+	
+	public int getDestinationASHopCount() {
+		if(isASReached()) {
+			int hopCounter = 0;
+			String destASN = results.get(results.size() - 1).asn;
+			for(TracerouteResult result: results)
+				if(result.asn.equals(destASN))
+					hopCounter++;
+			
+			return hopCounter;
+		}
+		
+		return -1;
+	}
+	
+	public float getASRoundTripTime() {
+		if(isASReached() && results.size() > 1) {
+			float destTime = results.get(results.size() - 1).getAveragePing();
+			for(int hostIndex = results.size() - 2; hostIndex >= 0 ; hostIndex--)
+				if(!results.get(hostIndex).asn.equals(asn)) {
+					float diff = destTime - results.get(hostIndex + 1).getAveragePing();
+					
+					return diff != 0f ? diff : 0f;
+				}
+					
+		}
+		
+		return 0f;
 	}
 }

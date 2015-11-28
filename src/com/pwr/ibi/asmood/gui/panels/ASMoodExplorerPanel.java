@@ -8,8 +8,8 @@ public class ASMoodExplorerPanel extends ASMoodPanel {
 	
 	public static String TAB_TITLE = "Explorer";
 
-	public ASMoodExplorerPanel(ASMoodManager asMoodManager) {
-		super(asMoodManager);
+	public ASMoodExplorerPanel() {
+		super();
 	}
 
 	@Override

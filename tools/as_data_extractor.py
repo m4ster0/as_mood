@@ -8,9 +8,9 @@ def main(argv):
 	max_asn = 65665
 	
 	try:
-		opts, args = getopt.getopt(argv,"ho",["ofile="])
+		opts, args = getopt.getopt(argv,"ho:",["ofile="])
 	except getopt.GetoptError:
-		print 'as_data_extractor [-o <path/to/outputfile>] min_as max_as'
+		print 'as_data_extractor -o <path/to/outputfile> min_as max_as'
 		sys.exit(2);
 	for opt, arg in opts:
 		if opt == '-h':
@@ -38,11 +38,11 @@ def main(argv):
 		as_data_arg = 'AS' + str(a)
 		subnet_arg = '"-i origin ' + as_data_arg + '"'
 		p_data_out = subprocess.check_output(['whois', '-h', 'whois.radb.net', '--', as_data_arg])
-		print # p_data_out
 		p_data_fields = p_data_out.splitlines()
 		if(len(p_data_fields) <= 5):
 			continue
 		line_result = as_data_arg + ','
+		as_name = ''
 		descr = []
 		imports = []
 		exports = []
@@ -50,8 +50,9 @@ def main(argv):
 			words = line.split()
 			if(len(words) < 2):
 				continue
-			
-			if words[0] == 'descr:':
+			if words[0]	== 'as-name:':
+				as_name = words[1]
+			elif words[0] == 'descr:':
 				add_as_data_line(descr, words, 1, len(words))
 			elif words[0] == 'import:':
 				add_as_data_line(imports, words, 2, 3)
@@ -60,10 +61,13 @@ def main(argv):
 		
 		p_subnet_out = subprocess.check_output(['whois -h whois.radb.net -- ' + subnet_arg + ' | grep -Eo "([0-9.]+){4}/[0-9]+" | head'], shell=True)
 		subnets = p_subnet_out.splitlines()
+
+		if(len(subnets) == 0):
+			continue
 		
 		final_line = ''
-		final_line += as_data_arg
-		final_line += ',desc'
+		final_line += as_data_arg + ','
+		final_line += as_name + ','
 		for d in descr:
 			final_line += ' ' + d
 		final_line += ',imports'
@@ -82,9 +86,9 @@ def main(argv):
 	print 'AS Scanner completed'
 	print 'Output file write starting...'
 	
-# 	with open(outputfile, 'w+') as out_f:
-# 		for line in flush_data:
-# 			out_f.write(line + '\n')
+ 	with open(outputfile, 'w+') as out_f:
+ 		for line in flush_data:
+ 			out_f.write(line + '\n')
 			
 	print 'Output file write complete'
 

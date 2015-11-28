@@ -12,17 +12,19 @@ public abstract class Tool<T> extends ToolThread {
 	
 	protected String[] options;
 	protected String hostname;
+	protected String asn;
 	
 	protected List<T> results;
 	
 	public boolean started = false;
 	
-	public Tool(String hostname)
+	public Tool(String hostname, String asn)
 	{
 		super();
 		
 		this.options = default_options;
 		this.hostname = hostname;
+		this.asn = asn;
 		
 		results = new ArrayList<T>();
 	}
@@ -56,6 +58,10 @@ public abstract class Tool<T> extends ToolThread {
 		return results;
 	}
 	
+	public String getHostname() {
+		return hostname;
+	}
+
 	protected String getCommandOptions()
 	{
 		String stringifiedOptions = "";

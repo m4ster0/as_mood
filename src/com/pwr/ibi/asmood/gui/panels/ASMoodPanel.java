@@ -8,12 +8,8 @@ public abstract class ASMoodPanel extends JPanel {
 	
 	public static String TAB_TITLE = "Panel";
 	
-	protected ASMoodManager asMoodManager;
-	
-	public ASMoodPanel(ASMoodManager asMoodManager)
+	public ASMoodPanel()
 	{
-		this.asMoodManager = asMoodManager;
-		
 		initUI();
 	}
 	
