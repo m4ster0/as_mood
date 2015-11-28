@@ -24,6 +24,8 @@ public class ASMoodHostSearchTask extends ASMoodPingTask {
 			String[] networkAddresses = subnet.getAllAddresses();
 			for(int i = 0; i < networkAddresses.length; i++)
 			{
+				System.out.println("Searched address: " + networkAddresses[i]);
+				
 				Ping worker = createToolWorker(networkAddresses[i], asModel.getASN());
 				worker.addListener(this);
 				executorService.submit(worker);

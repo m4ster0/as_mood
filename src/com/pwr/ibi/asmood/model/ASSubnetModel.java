@@ -16,6 +16,7 @@ public class ASSubnetModel implements DataModel {
 		this.desc = desc;
 		
 		this.subnetUtils = new SubnetUtils(networkCIDRNotation);
+		this.subnetUtils.setInclusiveHostCount(true);
 		this.subnetInfo = subnetUtils.getInfo();
 	}
 	

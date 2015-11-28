@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.pwr.ibi.asmood.ASMood;
 import com.pwr.ibi.asmood.model.ASSubnetModel;
+import com.pwr.ibi.asmood.utils.IPAddressUtil;
 
 public class CSVWriter {
 	
@@ -65,13 +66,24 @@ public class CSVWriter {
 				for(String exportASN: asMood.getASModel().getExportAS())
 					line += " " + exportASN;
 				
-				List<String> networks = new ArrayList<String>();
-				for(ASSubnetModel subnet: asMood.getASModel().getSubnets())
-					for(String host: asMood.getAviableHosts())
-						if(subnet.containsAddress(host) && !networks.contains(subnet.getNetworkCIDRNotation())) {
-							networks.add(subnet.getNetworkCIDRNotation());
-							break;
-						}
+//				List<String> networks = new ArrayList<String>();
+//				for(ASSubnetModel subnet: asMood.getASModel().getSubnets())
+//					for(String host: asMood.getAviableHosts())
+//						if(subnet.containsAddress(host) && !networks.contains(subnet.getNetworkCIDRNotation())) {
+//							networks.add(subnet.getNetworkCIDRNotation());
+//							break;
+//						}
+				
+				String startIPRaw = IPAddressUtil.getLowestIPAddress(asMood.getAviableHosts());
+				String endIPRaw = IPAddressUtil.getHighestIPAddress(asMood.getAviableHosts());
+				System.out.println(asMood.getASModel().getASN() + " - lowestAddress: " + startIPRaw);
+				System.out.println(asMood.getASModel().getASN() + " - highestAddress: " + endIPRaw);
+				long startConvert = IPAddressUtil.convertIPAddressToLong(startIPRaw);
+				long endConvert = IPAddressUtil.convertIPAddressToLong(endIPRaw);
+				String startIP = IPAddressUtil.convertLongToIPAddress(startConvert);
+				String endIP = IPAddressUtil.convertLongToIPAddress(endConvert);
+				
+				List<String> networks = IPAddressUtil.rangeToCIDRNetworks(startIP, endIP);
 				
 				line += ",subnets";
 				for(String net: networks)

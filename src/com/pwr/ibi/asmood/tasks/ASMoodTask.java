@@ -14,7 +14,7 @@ import com.pwr.ibi.asmood.tools.ToolWorkCompletedListener;
 
 public abstract class ASMoodTask<T extends ToolThread, V> implements ToolWorkCompletedListener {
 	
-	protected static final int maxConcurrentThreads = 4;
+	protected static final int maxConcurrentThreads = 8;
 	
 	protected Object lock = new Object();
 	
@@ -24,6 +24,7 @@ public abstract class ASMoodTask<T extends ToolThread, V> implements ToolWorkCom
 	protected List<String> hosts;
 	protected int maxResultCount;
 	protected List<List<V>> results;
+	protected volatile boolean taskNoMoreHosts;
 	
 	protected ExecutorService executorService;
 	protected final List<ASMoodProgressListener> taskProgressListeners;

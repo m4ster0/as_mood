@@ -161,31 +161,24 @@ public class ASMoodResearchTablePanel extends ASMoodPanel implements ASMoodManag
 	
 	protected void moveASDataToSelected(final TreePath[] selectedPaths) {
 		
-		Thread thread = new Thread(new Runnable(){
-			@Override
-			public void run() {
-				for(TreePath path: selectedPaths) {
-					DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-					
-					Object nodeObject = selectedNode.getUserObject();
-					if(nodeObject instanceof ASDataTreeModel) {
-						ASDataTreeModel asData = (ASDataTreeModel) nodeObject;
-						ASModel asModel = asData.getASModel();
-						
-						selectedNode.removeFromParent();
-						allASDataTreeModel.reload(allASDataTreeRootNode);
-						
-						addASDataNodeToParent(selectedASDataTreeRootNode, asModel, false);
-						selectedASDataTreeModel.reload(selectedASDataTreeRootNode);
-						
-						tableModel.moveASModelToSelected(asModel);
-					}
-					
-				}
+		for(TreePath path: selectedPaths) {
+			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+			
+			Object nodeObject = selectedNode.getUserObject();
+			if(nodeObject instanceof ASDataTreeModel) {
+				ASDataTreeModel asData = (ASDataTreeModel) nodeObject;
+				ASModel asModel = asData.getASModel();
+				
+				selectedNode.removeFromParent();
+				
+				addASDataNodeToParent(selectedASDataTreeRootNode, asModel, false);
+				
+				tableModel.moveASModelToSelected(asModel);
 			}
-		});
-		
-		thread.start();
+			
+		}
+		allASDataTreeModel.reload(allASDataTreeRootNode);
+		selectedASDataTreeModel.reload(selectedASDataTreeRootNode);
 	}
 	
 	protected void moveASDataToAll(TreePath[] selectedPaths) {
