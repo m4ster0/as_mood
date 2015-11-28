@@ -22,9 +22,10 @@ public class ASMoodHostSearchTask extends ASMoodPingTask {
 		for(ASSubnetModel subnet: subnets)
 		{
 			String[] networkAddresses = subnet.getAllAddresses();
+			totalWorkersCount += networkAddresses.length;
 			for(int i = 0; i < networkAddresses.length; i++)
 			{
-				System.out.println("Searched address: " + networkAddresses[i]);
+				//System.out.println("Searched address: " + networkAddresses[i]);
 				
 				Ping worker = createToolWorker(networkAddresses[i], asModel.getASN());
 				worker.addListener(this);

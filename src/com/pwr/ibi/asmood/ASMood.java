@@ -85,7 +85,7 @@ public class ASMood {
 				
 				//System.out.println("TaskProgress: " + progress);
 				synchronized (lock) {
-					if(progress >= 1.0) {
+					if(progress >= 1.0 || progress == -1.0f) {
 						workingTasks.remove(task);
 						task.removeListener(this);
 						
@@ -130,7 +130,7 @@ public class ASMood {
 				
 //				System.out.println(asModel.getASN() + " - " + TRACEROUTE_ID + " Progress: " + progress);
 				
-				if(progress >= 1.0) {
+				if(progress >= 1.0 || progress == -1.0f) {
 					workingTasks.remove(task);
 					task.removeListener(this);
 					
@@ -162,7 +162,7 @@ public class ASMood {
 				
 //				System.out.println(asModel.getASN() + " - " + PING_ID + " Progress: " + progress);
 				
-				if(progress >= 1.0) {
+				if(progress >= 1.0 || progress == -1.0f) {
 					workingTasks.remove(task);
 					task.removeListener(this);
 					

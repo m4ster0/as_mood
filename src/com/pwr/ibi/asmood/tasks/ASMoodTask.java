@@ -24,7 +24,8 @@ public abstract class ASMoodTask<T extends ToolThread, V> implements ToolWorkCom
 	protected List<String> hosts;
 	protected int maxResultCount;
 	protected List<List<V>> results;
-	protected volatile boolean taskNoMoreHosts;
+	protected volatile int totalWorkersCount;
+	protected volatile int workerFinishedCounter;
 	
 	protected ExecutorService executorService;
 	protected final List<ASMoodProgressListener> taskProgressListeners;
@@ -36,6 +37,9 @@ public abstract class ASMoodTask<T extends ToolThread, V> implements ToolWorkCom
 		this.taskCompleted = false;
 		this.hosts = hosts;
 		this.results = new ArrayList<List<V>>();
+		
+		this.totalWorkersCount = 0;
+		this.workerFinishedCounter = 0;
 		
 		executorService = Executors.newFixedThreadPool(maxConcurrentThreads);
 		taskProgressListeners = new ArrayList<ASMoodProgressListener>();
@@ -53,8 +57,6 @@ public abstract class ASMoodTask<T extends ToolThread, V> implements ToolWorkCom
 	
 	private final void notifyListeners(float progress)
 	{
-		//System.out.println("Notify listeners");
-		
 		for(ASMoodProgressListener listener: taskProgressListeners)
 			listener.notifyTaskProgressChanged(this, progress);
 	}
@@ -63,8 +65,8 @@ public abstract class ASMoodTask<T extends ToolThread, V> implements ToolWorkCom
 		this.maxResultCount = maxResultCount;
 		
 		G.logPanel.getTextArea().append(asModel.getASN() + " - Task start.\n");
-		
-		for(int i = 0; i < hosts.size(); i++)
+		totalWorkersCount = hosts.size();
+		for(int i = 0; i < totalWorkersCount; i++)
 		{
 			T worker = createToolWorker(hosts.get(i), asModel.getASN());
 			worker.addListener(this);
@@ -74,15 +76,20 @@ public abstract class ASMoodTask<T extends ToolThread, V> implements ToolWorkCom
 	
 	public void terminate() {
 		synchronized (lock) {
-			notifyListeners((float) results.size() / maxResultCount);
+			System.out.println(asModel.getASN() + " - TASK HOST COVERAGE: " + workerFinishedCounter + "/" + totalWorkersCount);
+			System.out.println(asModel.getASN() + " - Task shutDown");
 			taskCompleted = true;
 			executorService.shutdownNow();
+			
+			notifyListeners(-1.0f);
 		}
 	}
 	
 	@Override
 	public void notifyToolWorkCompleted(ToolThread toolThread) {
 		synchronized (lock) {
+			workerFinishedCounter++;
+			
 			if(!taskCompleted) {
 				List<V> result = getToolWorkerResult(toolThread);
 				
@@ -97,8 +104,10 @@ public abstract class ASMoodTask<T extends ToolThread, V> implements ToolWorkCom
 					}
 					notifyListeners((float) results.size() / maxResultCount);
 				}
-				
 			}
+			
+			if(workerFinishedCounter >= totalWorkersCount)
+				terminate();
 		}
 	}
 	
