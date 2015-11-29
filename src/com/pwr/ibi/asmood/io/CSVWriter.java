@@ -49,11 +49,14 @@ public class CSVWriter {
 		
 	}
 	
-	public static void writeActiveASMood(List<ASMood> asMoods) {
+	public static void writeActiveASMood(String path, List<ASMood> asMoods) {
 		try {
-			FileWriter writer = new FileWriter("test_data/active_as.csv");
+			FileWriter writer = new FileWriter(path);
 			
 			for(ASMood asMood: asMoods) {
+				if(asMood.getAviableHosts().isEmpty())
+					continue;
+				
 				String line = "";
 				
 				line += asMood.getASModel().getASN();
@@ -65,14 +68,6 @@ public class CSVWriter {
 				line += ",exports";
 				for(String exportASN: asMood.getASModel().getExportAS())
 					line += " " + exportASN;
-				
-//				List<String> networks = new ArrayList<String>();
-//				for(ASSubnetModel subnet: asMood.getASModel().getSubnets())
-//					for(String host: asMood.getAviableHosts())
-//						if(subnet.containsAddress(host) && !networks.contains(subnet.getNetworkCIDRNotation())) {
-//							networks.add(subnet.getNetworkCIDRNotation());
-//							break;
-//						}
 				
 				String startIPRaw = IPAddressUtil.getLowestIPAddress(asMood.getAviableHosts());
 				String endIPRaw = IPAddressUtil.getHighestIPAddress(asMood.getAviableHosts());
@@ -88,6 +83,45 @@ public class CSVWriter {
 				line += ",subnets";
 				for(String net: networks)
 					line += " " + net;
+				
+				line += "\n";
+				writer.append(line);
+			}
+			
+			writer.flush();
+		    writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void writeActiveASMoodHosts(String path, List<ASMood> asMoods) {
+		try {
+			FileWriter writer = new FileWriter(path);
+			
+			for(ASMood asMood: asMoods) {
+				if(asMood.getAviableHosts().isEmpty())
+					continue;
+				
+				String line = "";
+				
+				line += asMood.getASModel().getASN();
+				line += "," + asMood.getASModel().getName();
+				line += "," + asMood.getASModel().getDesc();
+				line += ",imports";
+				for(String importASN: asMood.getASModel().getImportAS())
+					line += " " + importASN;
+				line += ",exports";
+				for(String exportASN: asMood.getASModel().getExportAS())
+					line += " " + exportASN;
+				
+				line += ",subnets";
+				for(ASSubnetModel subnet: asMood.getASModel().getSubnets())
+					line += " " + subnet.getNetworkCIDRNotation();
+				
+				line += ",hosts";
+				for(String host: asMood.getAviableHosts())
+					line += " " + host;
 				
 				line += "\n";
 				writer.append(line);

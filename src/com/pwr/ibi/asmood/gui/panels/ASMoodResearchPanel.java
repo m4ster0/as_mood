@@ -54,6 +54,7 @@ public class ASMoodResearchPanel extends ASMoodPanel implements ASMoodResearchSt
 	private JButton loadDataButton;
 	private JButton clearDataButton;
 	private JButton saveActiveDataButton;
+	private JButton loadActiveDataButton;
 	
 	private JTextField hostNumberTextField;
 	private JTextField timeoutTextField;
@@ -151,7 +152,7 @@ public class ASMoodResearchPanel extends ASMoodPanel implements ASMoodResearchSt
 		c.weighty = 0.5;
 		fileManagerPanel.add(placeholderPanel, c);
 		
-		loadDataButton = new JButton("Load");
+		loadActiveDataButton = new JButton("Load Active");
 		c.insets = leftInset;
 		c.gridx = 2;
 		c.gridwidth = 2;
@@ -159,9 +160,9 @@ public class ASMoodResearchPanel extends ASMoodPanel implements ASMoodResearchSt
 		c.gridheight = 1;
 		c.weightx = 0.5;
 		c.weighty = 0.5;
-		fileManagerPanel.add(loadDataButton, c);
+		fileManagerPanel.add(loadActiveDataButton, c);
 		
-		clearDataButton = new JButton("Clear");
+		saveActiveDataButton = new JButton("Save Active");
 		c.insets = normalInset;
 		c.gridx = 4;
 		c.gridwidth = 2;
@@ -169,9 +170,9 @@ public class ASMoodResearchPanel extends ASMoodPanel implements ASMoodResearchSt
 		c.gridheight = 1;
 		c.weightx = 0.5;
 		c.weighty = 0.5;
-		fileManagerPanel.add(clearDataButton, c);
+		fileManagerPanel.add(saveActiveDataButton, c);
 		
-		saveActiveDataButton = new JButton("Save");
+		clearDataButton = new JButton("Clear");
 		c.insets = rightInset;
 		c.gridx = 6;
 		c.gridwidth = 2;
@@ -179,7 +180,17 @@ public class ASMoodResearchPanel extends ASMoodPanel implements ASMoodResearchSt
 		c.gridheight = 1;
 		c.weightx = 0.5;
 		c.weighty = 0.5;
-		fileManagerPanel.add(saveActiveDataButton, c);
+		fileManagerPanel.add(clearDataButton, c);
+		
+		loadDataButton = new JButton("Load");
+		c.insets = rightInset;
+		c.gridx = 6;
+		c.gridwidth = 2;
+		c.gridy = 1;
+		c.gridheight = 1;
+		c.weightx = 0.5;
+		c.weighty = 0.5;
+		fileManagerPanel.add(loadDataButton, c);
 		
 		fileChooserButton.addActionListener(new ActionListener() {
 			@Override
@@ -210,7 +221,20 @@ public class ASMoodResearchPanel extends ASMoodPanel implements ASMoodResearchSt
 		saveActiveDataButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				G.asManager.saveActiveASData();
+				JFileChooser fileChooser = new JFileChooser(new File(System.getProperty("user.dir")));
+				int result = fileChooser.showSaveDialog(ASMoodResearchPanel.this);
+				if(result == JFileChooser.APPROVE_OPTION)
+					G.asManager.saveActiveASData(fileChooser.getSelectedFile().getPath());
+			}
+		});
+		
+		loadActiveDataButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser(new File(System.getProperty("user.dir")));
+				int result = fileChooser.showOpenDialog(ASMoodResearchPanel.this);
+				if(result == JFileChooser.APPROVE_OPTION)
+					G.asManager.initActive(fileChooser.getSelectedFile().getPath());
 			}
 		});
 	}
@@ -441,6 +465,7 @@ public class ASMoodResearchPanel extends ASMoodPanel implements ASMoodResearchSt
 			researchButton.setEnabled(false);
 			loadDataButton.setEnabled(false);
 			clearDataButton.setEnabled(false);
+			loadActiveDataButton.setEnabled(false);
 			break;
 		case ExploreProcess:
 			researchButton.setText(stopBtnText);
@@ -449,6 +474,7 @@ public class ASMoodResearchPanel extends ASMoodPanel implements ASMoodResearchSt
 			searchHostsButton.setEnabled(false);
 			loadDataButton.setEnabled(false);
 			clearDataButton.setEnabled(false);
+			loadActiveDataButton.setEnabled(false);
 			break;
 		case IdleProcess:
 		default:
@@ -463,6 +489,7 @@ public class ASMoodResearchPanel extends ASMoodPanel implements ASMoodResearchSt
 			
 			loadDataButton.setEnabled(true);
 			clearDataButton.setEnabled(true);
+			loadActiveDataButton.setEnabled(true);
 			break;
 		}
 	}

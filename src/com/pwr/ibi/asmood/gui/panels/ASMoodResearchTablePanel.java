@@ -28,6 +28,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import com.pwr.ibi.asmood.ASMood;
 import com.pwr.ibi.asmood.ASMoodManager;
 import com.pwr.ibi.asmood.G;
 import com.pwr.ibi.asmood.model.ASModel;
@@ -269,6 +270,16 @@ public class ASMoodResearchTablePanel extends ASMoodPanel implements ASMoodManag
 		}
 		
 		selectedASDataTreeModel.reload(selectedASDataTreeRootNode);
+	}
+
+	@Override
+	public void notifyManagerActiveInitied(List<ASMood> asMoods) {
+		for(ASMood asMood: asMoods) {
+			tableModel.addASModelToSelected(asMood.getASModel());
+			addASDataNodeToParent(selectedASDataTreeRootNode, asMood.getASModel(), false);
+			addHostsToSelectedASDataNode(asMood.getASModel(), asMood.getAviableHosts());
+		}
+		
 	}
 	
 }

@@ -10,7 +10,7 @@ public class Ping extends Tool<PingResult> {
 	private static final String regex_timeout_pattern = "timed out";
 
 	private static final String COMMAND_PATH = "ping";
-	private static final String[] OPTIONS = {"-c 3 -i 0.3"};
+	private static final String[] OPTIONS = {"-c 1 -i 0.3"};
 	
 	private int packetLostCounter;
 	private int packetCounter;

@@ -8,9 +8,11 @@ import java.util.List;
 import com.pwr.ibi.asmood.gui.panels.ASMoodManagerListener;
 import com.pwr.ibi.asmood.gui.panels.ASMoodResearchPanel.ASMoodProcessState;
 import com.pwr.ibi.asmood.gui.panels.ASMoodResearchStateListener;
+import com.pwr.ibi.asmood.io.ASActiveDataCSVParser;
 import com.pwr.ibi.asmood.io.ASDataCSVParser;
 import com.pwr.ibi.asmood.io.CSVWriter;
 import com.pwr.ibi.asmood.model.ASModel;
+import com.pwr.ibi.asmood.model.ASModelActive;
 
 public class ASMoodManager implements ASMoodExplorationListener {
 	
@@ -70,8 +72,24 @@ public class ASMoodManager implements ASMoodExplorationListener {
 			listener.notifyManagerInitied(asModels);
 	}
 	
+	public void initActive(String filePath)
+	{
+		ASActiveDataCSVParser parser = new ASActiveDataCSVParser(filePath);
+		
+		parser.parse();
+		for (ASModelActive modelActive: parser.getResults()) {
+			asModels.add(modelActive.getAsModel());
+			ASMood asMood = new ASMood(modelActive.getAsModel());
+			asMood.getAviableHosts().addAll(modelActive.getHosts());
+			asMoods.add(asMood);
+		}
+		
+		listener.notifyManagerActiveInitied(asMoods);
+	}
+	
 	public void clear() {
 		asModels.clear();
+		asMoods.clear();
 		listener.notifyManagerClear();
 	}
 	
@@ -119,11 +137,11 @@ public class ASMoodManager implements ASMoodExplorationListener {
 		asMoods.add(asMood);
 	}
 	
-	public void saveActiveASData() {
+	public void saveActiveASData(String path) {
 		if(asMoods.isEmpty())
 			return;
 		
-		CSVWriter.writeActiveASMood(asMoods);
+		CSVWriter.writeActiveASMoodHosts(path, asMoods);
 	}
 	
 	public void addASMood(ASModel model) {
@@ -180,6 +198,7 @@ public class ASMoodManager implements ASMoodExplorationListener {
 	public void notifySearchHostsCompleted(ASMood asMood) {
 		workingMoods.remove(asMood);
 		asMood.removeListener(this);
+		System.out.println("ASMoodManager - addWorkingASMood from QueueLength: " + queueMoods.size());
 		addWorkingASMoods(1, ASMood.HOST_SEARCH_ID);
 		
 		float progress = (float) (asMoods.size() - (workingMoods.size() + queueMoods.size())) / asMoods.size();

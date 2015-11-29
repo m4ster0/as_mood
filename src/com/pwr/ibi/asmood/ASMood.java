@@ -83,25 +83,32 @@ public class ASMood {
 			@Override
 			public void notifyTaskProgressChanged(ASMoodHostSearchTask task, float progress) {
 				
-				//System.out.println("TaskProgress: " + progress);
+				System.out.println("ASMood " + asModel.getASN() + " - searchHost progress: " + progress);
 				synchronized (lock) {
 					if(progress >= 1.0 || progress == -1.0f) {
+						System.out.println("ASMood " + asModel.getASN() + " - AviableHost Get start.");
 						workingTasks.remove(task);
 						task.removeListener(this);
 						
+						System.out.println("ASMood " + asModel.getASN() + " - AviableHost Get results");
 						List<List<PingResult>> taskResults = task.getResults();
 						
+						System.out.println("ASMood " + asModel.getASN() + " - AviableHost Add results start");
 						for(List<PingResult> pingResults: taskResults)
 							if(!pingResults.isEmpty())
 								aviableHosts.add(pingResults.get(0).ipAddress);
+						System.out.println("ASMood " + asModel.getASN() + " - AviableHost Add results end");
 							
-						if(listener != null)
+						if(listener != null) {
+							System.out.println("ASMood " + asModel.getASN() + " - AviableHost Notify ASManager");
 							listener.notifySearchHostsCompleted(ASMood.this);
+						}
 						
 						for(String host: aviableHosts)
 							System.out.println("AviableHost: " + host);
 						
-						System.out.println("PingTask Completed");
+						task = null;
+						System.out.println("SearchHost Completed");
 					}
 				}
 			}
@@ -205,6 +212,5 @@ public class ASMood {
 	public Map<String, Float> getTracerouteTimes() {
 		return tracerouteTimes;
 	}
-	
 	
 }

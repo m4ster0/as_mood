@@ -14,7 +14,7 @@ import com.pwr.ibi.asmood.tools.ToolWorkCompletedListener;
 
 public abstract class ASMoodTask<T extends ToolThread, V> implements ToolWorkCompletedListener {
 	
-	protected static final int maxConcurrentThreads = 8;
+	protected static final int maxConcurrentThreads = 4;
 	
 	protected Object lock = new Object();
 	
@@ -57,6 +57,8 @@ public abstract class ASMoodTask<T extends ToolThread, V> implements ToolWorkCom
 	
 	private final void notifyListeners(float progress)
 	{
+		System.out.println(asModel.getASN() + " - Notify listeners on progress: " + progress);
+		
 		for(ASMoodProgressListener listener: taskProgressListeners)
 			listener.notifyTaskProgressChanged(this, progress);
 	}
@@ -80,8 +82,6 @@ public abstract class ASMoodTask<T extends ToolThread, V> implements ToolWorkCom
 			System.out.println(asModel.getASN() + " - Task shutDown");
 			taskCompleted = true;
 			executorService.shutdownNow();
-			
-			notifyListeners(-1.0f);
 		}
 	}
 	
@@ -106,8 +106,10 @@ public abstract class ASMoodTask<T extends ToolThread, V> implements ToolWorkCom
 				}
 			}
 			
-			if(workerFinishedCounter >= totalWorkersCount)
+			if(!taskCompleted && workerFinishedCounter >= totalWorkersCount) {
 				terminate();
+				notifyListeners(-1.0f);
+			}
 		}
 	}
 	
